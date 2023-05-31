@@ -3,8 +3,10 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const books = require('./books')
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const bookModel = require('./books');
 
 const app = express();
 app.use(cors());
@@ -16,6 +18,14 @@ app.get('/test', (request, response) => {
 
   response.send('test request received')
 
+})
+
+app.get('/books', async (req, res) => {
+
+  //connect
+  const allBooks = await books.find({});
+  //disconnect
+res.send(allBooks)
 })
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
