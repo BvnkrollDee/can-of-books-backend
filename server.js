@@ -12,7 +12,6 @@ const mongoose = require("mongoose");
 const bookModel = require("./books");
 // Importing the Mongoose library, which provides a straightforward way to work with MongoDB.
 // The 'bookModel' variable seems to be unnecessary since the 'books' module is already imported above.
-
 const app = express();
 app.use(express.json());
 app.use(cors());
