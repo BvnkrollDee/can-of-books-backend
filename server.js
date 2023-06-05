@@ -8,13 +8,10 @@ const cors = require("cors");
 const books = require("./books");
 // Importing required modules for the application: express, cors, and a local module called 'books'.
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const books = require('./books')
-
-const mongoose = require('mongoose');
-const bookModel = require('./books');
+const mongoose = require("mongoose");
+const bookModel = require("./books");
+// Importing the Mongoose library, which provides a straightforward way to work with MongoDB.
+// The 'bookModel' variable seems to be unnecessary since the 'books' module is already imported above.
 
 const app = express();
 app.use(express.json());
@@ -29,18 +26,48 @@ const PORT = process.env.PORT || 3001;
 // Setting the port for the server. It will use the value of the PORT environment variable if available,
 // otherwise it defaults to port 3001.
 
-app.get('/test', (request, response) => {
+app.get("/test", (request, response) => {
+  response.send("test request received");
+});
+// Defining a route for '/test' that sends a response of 'test request received' when accessed.
+// This is a simple test route to check if the server is working.
 
-  response.send('test request received')
+app.get("/books", async (req, res) => {
+  const allBooks = await books.find({});
+  res.send(allBooks);
+});
+app.post('/books', async (req, res) => {
+  let book = req.body
+  books.insertMany(book)
+  .then(()=>{
+    console.log("Added new book")
+  }) // inserting data from the request into my mongoDB
+  .catch((error) =>{  
+    res.status(500).json({error: error.message})
+  })
+  res.send('ok')
+})
+// Defining a route for '/books' that retrieves all books from the database and sends them as a response.
+// It uses the 'books' module, which likely contains the Mongoose model for the books collection.
 
+app.delete('/books/:id', async (req, res) => {
+const bookId = req.params.id
+
+await books.findByIdAndDelete(bookId)
+res.send('Read nigga reeaddddd - Uncle Rukus')
+.catch((error) => {
+  res.status(500).json({error: error.message})
+})
 })
 
-app.get('/books', async (req, res) => {
+app.put('/books/:id', async (req, res) => {
+  let bookId = req.params.id
+  let book = req.body
 
-  //connect
-  const allBooks = await books.find({});
-  //disconnect
-res.send(allBooks)
+  let newBook = await books.findByIdAndUpdate(bookId, book, {
+    new: true
+  }) // updating an existing book with new data
+  res.send(newBook)
 })
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
