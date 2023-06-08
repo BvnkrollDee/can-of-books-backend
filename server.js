@@ -26,7 +26,7 @@ const jwtCheck = auth({
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(jwtCheck); // enforce on all endpoints
+// app.use(jwtCheck); // enforce on all endpoints
 app.use(verifyUser)
 // Creating an instance of the Express application and enabling Cross-Origin Resource Sharing (CORS) middleware.
 // CORS allows requests from different origins to access the server's resources.
@@ -42,24 +42,14 @@ let connection = async function (){
 let disconnect = async function(){
   await mongoose.disconnect();
 }
-let seed = async function (){
-  await connection()
-  let books = [ // Create an array of book objects for testing purposes
-    {title: 'test', description: 'test', status: 'test'},
-    {title: 'test2', description: 'test2', status: 'test2'},
-    {title: 'test3', description: 'test3', status: 'test3'}
-];
+let seed = require("./seed")
 
-bookModel.insertMany(books); // Insert the book objects into the book collection in the database
-disconnect()
-}
 const PORT = process.env.PORT || 3001;
 // Setting the port for the server. It will use the value of the PORT environment variable if available,
 // otherwise it defaults to port 3001.
 
 app.get('/', async (req, res) => {
   try{ 
-    //console.log(req)
   res.send('You must think the sun shines out the crack of yo ass - Uncle Rukus')}
 catch(error){
 console.log('check this out' + error)
@@ -77,10 +67,9 @@ app.get("/test", async (request, response) => {
 
 app.get("/books", async (req, res) => {
   try{ 
-    //console.log(req)
-  await mongoose.connect(process.env.MONGO_DB)
-  const allBooks = await books.find({});
-  disconnect()
+    await mongoose.connect(process.env.MONGO_DB)
+    let allBooks = await books.find({email: req.user.email}).exec()
+    disconnect()
   res.send(allBooks);
 }
 catch(error){
@@ -90,12 +79,12 @@ console.log(error)
 app.post('/books', async (req, res) => {
   await connection()
   let book = req.body
-  books.insertMany(book)
+  await books.insertMany(book)
   .then(()=>{
     console.log("Added new book")
   }) // inserting data from the request into my mongoDB
   .catch((error) =>{  
-    res.status(500).json({error: error.message})
+    res.json({error: error.message});//.status(500)
   })
   mongoose.disconnect();
   res.send('ok')
