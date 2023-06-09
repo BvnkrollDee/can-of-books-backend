@@ -10,9 +10,8 @@ async function verifyUser(request, response, next) {
         let headers = {
             Authorization: `Bearer ${token}`
         }
-        try {let response = await axios.get(process.env.AUTH_DOMAIN, { headers: headers })} catch{(error) => {response.send(error)}}
-        request.user = response.data
-        console.log(request.user)
+        let user_response = await axios.get(process.env.AUTH_DOMAIN, { headers: headers })
+        request.user = user_response.data
     }
     next()
 }
