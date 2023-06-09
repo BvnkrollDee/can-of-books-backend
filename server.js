@@ -65,29 +65,56 @@ app.get("/test", async (request, response) => {
 // This is a simple test route to check if the server is working.
 
 app.get("/books", async (req, res) => {
-  try{ 
+  try {
+    // Connect to MongoDB using the provided environment variable
     await mongoose.connect(process.env.MONGO_DB)
-    let allBooks = await books.find({email: req.user.email}).exec()
+
+    // Log the user object from the request
+    console.log(req.user)
+
+    // Log the email property of the user object
+    console.log(req.user.email)
+
+    // Find all books in the database that match the user's email
+    let allBooks = await books.find({ email: req.user.email }).exec()
+
+    // Disconnect from the MongoDB
     disconnect()
-  res.send(allBooks);
-}
-catch(error){
-console.log(error)
-}
+
+    // Send the retrieved books as the response
+    res.send(allBooks);
+  } catch (error) {
+    // Log any errors that occur during the execution
+    console.log(error)
+  }
 });
+
 app.post('/books', async (req, res) => {
+  // Establish a connection to MongoDB
   await connection()
+
+  // Extract the book object from the request body
   let book = req.body
+
+  // Assign the email property of the user object to the book
+  book.email = req.user.email
+
+  // Insert the book object into the books collection
   await books.insertMany(book)
-  .then(()=>{
-    console.log("Added new book")
-  }) // inserting data from the request into my mongoDB
-  .catch((error) =>{  
-    res.json({error: error.message});//.status(500)
-  })
+    .then(() => {
+      console.log("Added new book")
+    }) // Log a success message if the insertion is successful
+    .catch((error) => {
+      res.json({ error: error.message }); // Send an error response if there's an error
+    })
+
+  // Disconnect from MongoDB
   mongoose.disconnect();
+
+  // Send a response indicating success
   res.send('ok')
 })
+
 // Defining a route for '/books' that retrieves all books from the database and sends them as a response.
 // It uses the 'books' module, which likely contains the Mongoose model for the books collection.
 
