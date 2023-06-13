@@ -74,13 +74,13 @@ app.get("/books", async (req, res) => {
     console.log(req.user)
 
     // Log the email property of the user object
-    console.log(req.user.email)
+    console.log(req.user?.email)
 
     // Find all books in the database that match the user's email
     let allBooks = await books.find({ email: req.user.email }).exec()
 
     // Disconnect from the MongoDB
-    disconnect()
+    disconnect() 
 
     // Send the retrieved books as the response
     res.send(allBooks);
@@ -98,7 +98,7 @@ app.post('/books', async (req, res) => {
   let book = req.body
 
   // Assign the email property of the user object to the book
-  book.email = req.user.email
+  book.email = req.user?.email
 
   // Insert the book object into the books collection
   await books.insertMany(book)
