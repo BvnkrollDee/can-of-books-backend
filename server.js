@@ -78,7 +78,7 @@ app.get("/books", async (req, res) => {
 
     // Find all books in the database that match the user's email
     let allBooks = []
-    if(express.request.user?.email){
+    if(request.user?.email){
       allBooks = await books.find({ email: req.user?.email }).exec()
     }else{
       allBooks = await books.find()
