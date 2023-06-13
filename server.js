@@ -77,7 +77,7 @@ app.get("/books", async (req, res) => {
     console.log(req.user?.email)
 
     // Find all books in the database that match the user's email
-    let allBooks = await books.find({ email: req.user.email }).exec()
+    let allBooks = await books.find({ email: req.user?.email }).exec()
 
     // Disconnect from the MongoDB
     disconnect() 
